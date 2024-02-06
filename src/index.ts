@@ -1,5 +1,13 @@
 import app from "./app.js";
+import { connectDatabase } from "./database/database.js";
 
-app.listen(app.get("port"), () => {
-  console.log(`Server is running on port ${app.get("port")}`);
+(async () => {
+  await connectDatabase();
+  console.log("[*] Database connected");
+
+  app.listen(app.get("port"), () => {
+    console.log(`[*] Server running on port ${app.get("port")}`);
+  });
+})().catch((error) => {
+  console.error("[*] ERROR", error);
 });
