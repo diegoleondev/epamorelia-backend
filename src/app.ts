@@ -1,12 +1,13 @@
 import express from "express";
 import morgan from "morgan";
+import { SERVER_ENV } from "./constants/server.js";
+
 const app = express();
+const { SERVER_PORT } = SERVER_ENV;
+
+app.set("port", SERVER_PORT);
 
 app.use(morgan("dev"));
-
-app.set("port", process.env.PORT ?? 3000);
-
-// public files
 app.use(express.static("public"));
 
 app.get("/", (req, res) => {
