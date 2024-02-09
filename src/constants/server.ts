@@ -4,6 +4,7 @@ export const SERVER_MODES = {
 };
 
 export const SERVER_ENV = {
+  AUTH_SECRET: process.env.AUTH_SECRET ?? "****",
   SERVER_PORT: parseInt(process.env.PORT ?? "3000"),
   SERVER_MODE: process.env.SERVER_MODE ?? SERVER_MODES.PRODUCTION,
   DB_HOST: process.env.DB_HOST ?? "localhost",
