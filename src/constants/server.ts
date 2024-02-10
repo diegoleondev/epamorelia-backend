@@ -14,3 +14,7 @@ export const SERVER_ENV = {
   DB_DATABASE: process.env.DB_DATABASE ?? "test",
   DB_DIALECT: process.env.DB_DIALECT ?? ("mariadb" as const),
 };
+
+export const SERVER_HEADERS = {
+  AUTH_TOKEN: "auth-token",
+};
