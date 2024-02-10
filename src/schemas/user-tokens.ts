@@ -12,14 +12,14 @@ class UserToken extends Model<
   InferAttributes<UserToken>,
   InferCreationAttributes<UserToken>
 > {
-  declare user_id: ForeignKey<User["id"]>;
+  declare userId: ForeignKey<User["id"]>;
   declare token: string;
-  declare expires_at: Date;
+  declare expiresAt: Date;
 }
 
 UserToken.init(
   {
-    user_id: {
+    userId: {
       type: DataTypes.UUID,
       allowNull: false,
     },
@@ -28,7 +28,7 @@ UserToken.init(
       primaryKey: true,
       allowNull: false,
     },
-    expires_at: {
+    expiresAt: {
       type: DataTypes.DATE,
       allowNull: false,
     },

@@ -15,7 +15,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare username: string;
   declare password: string;
   declare verified: CreationOptional<boolean>;
-  declare created_at: CreationOptional<Date>;
+  declare createdAt: CreationOptional<Date>;
 }
 
 User.init(
@@ -45,7 +45,7 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
@@ -59,35 +59,35 @@ User.init(
 );
 
 User.hasMany(UserToken, {
-  foreignKey: "user_id",
+  foreignKey: "userId",
   sourceKey: "id",
   onDelete: "CASCADE",
 });
 
 UserToken.belongsTo(User, {
-  foreignKey: "user_id",
+  foreignKey: "userId",
   targetKey: "id",
 });
 
 User.hasMany(UserInvitation, {
-  foreignKey: "origin_user_id",
+  foreignKey: "sourceUserId",
   sourceKey: "id",
   onDelete: "CASCADE",
 });
 
 UserInvitation.belongsTo(User, {
-  foreignKey: "origin_user_id",
+  foreignKey: "sourceUserId",
   targetKey: "id",
 });
 
 User.hasMany(UserInvitation, {
-  foreignKey: "target_user_id",
+  foreignKey: "targetUserId",
   sourceKey: "id",
   onDelete: "CASCADE",
 });
 
 UserInvitation.belongsTo(User, {
-  foreignKey: "target_user_id",
+  foreignKey: "targetUserId",
   targetKey: "id",
 });
 

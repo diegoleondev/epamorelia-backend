@@ -14,9 +14,9 @@ class UserInvitation extends Model<
   InferCreationAttributes<UserInvitation>
 > {
   declare id: string;
-  declare origin_user_id: ForeignKey<User["id"]>;
-  declare target_user_id: ForeignKey<User["id"]> | null;
-  declare created_at: CreationOptional<Date>;
+  declare sourceUserId: ForeignKey<User["id"]>;
+  declare targetUserId: ForeignKey<User["id"]> | null;
+  declare createdAt: CreationOptional<Date>;
 }
 
 UserInvitation.init(
@@ -27,16 +27,16 @@ UserInvitation.init(
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
     },
-    origin_user_id: {
+    sourceUserId: {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    target_user_id: {
+    targetUserId: {
       type: DataTypes.UUID,
       defaultValue: null,
       allowNull: true,
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
