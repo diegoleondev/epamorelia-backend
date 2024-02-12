@@ -13,7 +13,7 @@ class UserInvitation extends Model<
   InferAttributes<UserInvitation>,
   InferCreationAttributes<UserInvitation>
 > {
-  declare id: string;
+  declare id: CreationOptional<string>;
   declare sourceUserId: ForeignKey<User["id"]>;
   declare targetUserId: ForeignKey<User["id"]> | null;
   declare createdAt: CreationOptional<Date>;
