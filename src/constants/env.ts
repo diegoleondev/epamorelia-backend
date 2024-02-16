@@ -1,12 +1,9 @@
-export const SERVER_MODES = {
-  PRODUCTION: "production",
-  DEVELOPMENT: "development",
-};
+import MODES from "./modes.js";
 
-export const SERVER_ENV = {
+export const ENV = {
   AUTH_SECRET: process.env.AUTH_SECRET ?? "****",
   SERVER_PORT: parseInt(process.env.SERVER_PORT ?? "3000"),
-  SERVER_MODE: process.env.SERVER_MODE ?? SERVER_MODES.PRODUCTION,
+  SERVER_MODE: process.env.SERVER_MODE ?? MODES.PRODUCTION,
   DB_HOST: process.env.DB_HOST ?? "localhost",
   DB_PORT: parseInt(process.env.DB_PORT ?? "3306"),
   DB_USERNAME: process.env.DB_USERNAME ?? "root",
@@ -15,6 +12,4 @@ export const SERVER_ENV = {
   DB_DIALECT: process.env.DB_DIALECT ?? ("mariadb" as const),
 };
 
-export const SERVER_HEADERS = {
-  AUTH_TOKEN: "auth-token",
-};
+export default ENV;
