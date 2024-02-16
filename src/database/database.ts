@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
-import { SERVER_ENV, SERVER_MODES } from "../constants/server.js";
+import { ENV, MODES } from "../constants/index.js";
 
-const { DEVELOPMENT, PRODUCTION } = SERVER_MODES;
+const { DEVELOPMENT, PRODUCTION } = MODES;
 
 const {
   DB_HOST,
@@ -11,7 +11,7 @@ const {
   DB_DATABASE,
   DB_DIALECT,
   SERVER_MODE,
-} = SERVER_ENV;
+} = ENV;
 
 export const sequelize = new Sequelize(DB_DATABASE, DB_USERNAME, DB_PASSWORD, {
   host: DB_HOST,

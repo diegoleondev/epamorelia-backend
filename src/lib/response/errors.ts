@@ -1,4 +1,4 @@
-import { ERRORS_HTTP } from "../../constants/errors.js";
+import { STATUS_CODE } from "../../constants/index.js";
 import { type Details } from "../../validators/handler.js";
 
 export interface ResponseErrorProps {
@@ -11,25 +11,25 @@ export class ResponseError extends Error {
   statusCode: number;
   constructor(props: ResponseErrorProps) {
     super("ResponseError");
-    this.statusCode = props.statusCode ?? ERRORS_HTTP.UNKNOWN_ERROR;
+    this.statusCode = props.statusCode ?? STATUS_CODE.UNKNOWN_ERROR;
     this.details = props.details ?? {};
   }
 }
 
 export class BadRequestError extends ResponseError {
   constructor(details?: Details) {
-    super({ statusCode: ERRORS_HTTP.BAD_REQUEST, details });
+    super({ statusCode: STATUS_CODE.BAD_REQUEST, details });
   }
 }
 
 export class UnauthorizedError extends ResponseError {
   constructor(details?: Details) {
-    super({ statusCode: ERRORS_HTTP.UNAUTHORIZED, details });
+    super({ statusCode: STATUS_CODE.UNAUTHORIZED, details });
   }
 }
 
 export class NotFoundError extends ResponseError {
   constructor(details?: Details) {
-    super({ statusCode: ERRORS_HTTP.NOT_FOUND, details });
+    super({ statusCode: STATUS_CODE.NOT_FOUND, details });
   }
 }

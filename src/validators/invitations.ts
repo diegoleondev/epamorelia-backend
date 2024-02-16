@@ -1,15 +1,15 @@
 import { z } from "zod";
-import { ERRORS_TYPES } from "../constants/errors.js";
+import { DETAILS } from "../constants/index.js";
 import { schemaHandler } from "./handler.js";
 
 const getInvitationUsernameSchema = z.object({
   query: z.object({
     id: z
       .string({
-        required_error: ERRORS_TYPES.EMPTY,
-        invalid_type_error: ERRORS_TYPES.TYPE,
+        required_error: DETAILS.EMPTY,
+        invalid_type_error: DETAILS.TYPE,
       })
-      .uuid(ERRORS_TYPES.FORMAT),
+      .uuid(DETAILS.FORMAT),
   }),
 });
 

@@ -1,22 +1,22 @@
 import { z } from "zod";
-import { ERRORS_TYPES } from "../constants/errors.js";
+import { DETAILS } from "../constants/index.js";
 import { schemaHandler } from "./handler.js";
 
 const loginSchema = z.object({
   body: z.object({
     email: z
       .string({
-        required_error: ERRORS_TYPES.EMPTY,
-        invalid_type_error: ERRORS_TYPES.TYPE,
+        required_error: DETAILS.EMPTY,
+        invalid_type_error: DETAILS.TYPE,
       })
-      .email(ERRORS_TYPES.FORMAT),
+      .email(DETAILS.FORMAT),
     password: z
       .string({
-        required_error: ERRORS_TYPES.EMPTY,
-        invalid_type_error: ERRORS_TYPES.TYPE,
+        required_error: DETAILS.EMPTY,
+        invalid_type_error: DETAILS.TYPE,
       })
-      .min(6, ERRORS_TYPES.SHORT)
-      .max(100, ERRORS_TYPES.LONG),
+      .min(6, DETAILS.SHORT)
+      .max(100, DETAILS.LONG),
   }),
 });
 
@@ -27,30 +27,30 @@ const signupSchema = z.object({
   body: z.object({
     email: z
       .string({
-        required_error: ERRORS_TYPES.EMPTY,
-        invalid_type_error: ERRORS_TYPES.TYPE,
+        required_error: DETAILS.EMPTY,
+        invalid_type_error: DETAILS.TYPE,
       })
-      .email(ERRORS_TYPES.FORMAT),
+      .email(DETAILS.FORMAT),
     password: z
       .string({
-        required_error: ERRORS_TYPES.EMPTY,
-        invalid_type_error: ERRORS_TYPES.TYPE,
+        required_error: DETAILS.EMPTY,
+        invalid_type_error: DETAILS.TYPE,
       })
-      .min(6, ERRORS_TYPES.SHORT)
-      .max(100, ERRORS_TYPES.LONG),
+      .min(6, DETAILS.SHORT)
+      .max(100, DETAILS.LONG),
     username: z
       .string({
-        required_error: ERRORS_TYPES.EMPTY,
-        invalid_type_error: ERRORS_TYPES.TYPE,
+        required_error: DETAILS.EMPTY,
+        invalid_type_error: DETAILS.TYPE,
       })
-      .min(3, ERRORS_TYPES.SHORT)
-      .max(25, ERRORS_TYPES.LONG),
+      .min(3, DETAILS.SHORT)
+      .max(25, DETAILS.LONG),
     invitation: z
       .string({
-        required_error: ERRORS_TYPES.EMPTY,
-        invalid_type_error: ERRORS_TYPES.TYPE,
+        required_error: DETAILS.EMPTY,
+        invalid_type_error: DETAILS.TYPE,
       })
-      .uuid(ERRORS_TYPES.FORMAT),
+      .uuid(DETAILS.FORMAT),
   }),
 });
 
@@ -60,8 +60,8 @@ export type SignupBody = z.infer<typeof signupSchema>["body"];
 const logoutSchema = z.object({
   body: z.object({
     token: z.string({
-      required_error: ERRORS_TYPES.EMPTY,
-      invalid_type_error: ERRORS_TYPES.TYPE,
+      required_error: DETAILS.EMPTY,
+      invalid_type_error: DETAILS.TYPE,
     }),
   }),
 });

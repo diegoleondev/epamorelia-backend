@@ -1,5 +1,5 @@
 import { type ValidationError } from "sequelize";
-import { ERRORS_TYPES } from "../constants/errors.js";
+import { DETAILS } from "../constants/index.js";
 import User from "../schemas/user.js";
 import { ModelError } from "./index.js";
 
@@ -23,15 +23,15 @@ export async function create(props: CreateProps) {
     const { message } = error.errors[0];
     if (message === "email must be unique") {
       ME.addDetails({
-        email: ERRORS_TYPES.UNIQUE,
+        email: DETAILS.UNIQUE,
       });
     } else if (message === "username must be unique") {
       ME.addDetails({
-        username: ERRORS_TYPES.UNIQUE,
+        username: DETAILS.UNIQUE,
       });
     } else {
       ME.addDetails({
-        _: ERRORS_TYPES.UNKNOWN,
+        _: DETAILS.UNKNOWN,
       });
     }
 

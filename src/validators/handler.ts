@@ -1,5 +1,5 @@
 import { ZodError, type AnyZodObject } from "zod";
-import { ERRORS_TYPES } from "../constants/errors.js";
+import { DETAILS } from "../constants/index.js";
 
 export type Details = Partial<Record<string, string>>;
 
@@ -26,7 +26,7 @@ export const schemaHandler = (schema: AnyZodObject) => {
       schema.parse(value);
       return success();
     } catch (err) {
-      if (!(err instanceof ZodError)) return error({ _: ERRORS_TYPES.UNKNOWN });
+      if (!(err instanceof ZodError)) return error({ _: DETAILS.UNKNOWN });
 
       const parsed = err.issues.reduce<Details>(
         (acc, { path, message }) => ({
