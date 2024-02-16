@@ -1,4 +1,4 @@
-import type { Details } from "validators/response.js";
+import type { Details } from "validators/handler.js";
 
 export class ModelError<T extends Details> extends Error {
   public details: Details;
