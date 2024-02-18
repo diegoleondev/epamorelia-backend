@@ -1,6 +1,6 @@
 import type { LoginBody, LogoutBody, SignupBody } from "../validators/auth.js";
 
-import { DETAILS, HEADERS } from "../constants/index.js";
+import { DETAILS } from "../constants/index.js";
 import { BadRequestError, UnauthorizedError } from "../lib/response/errors.js";
 import response from "../lib/response/response.js";
 import { compare, encrypt } from "../utils/auth/encrypt.js";
@@ -60,8 +60,7 @@ export const signup = requestErrorHandler<
     throw new BadRequestError({ _: DETAILS.UNKNOWN });
   });
 
-  res.setHeader(HEADERS.AUTH_TOKEN, token);
-  response.success(res, {});
+  response.success(res, { token, expiresIn });
 });
 
 export const devSignup = requestErrorHandler<
@@ -90,8 +89,7 @@ export const devSignup = requestErrorHandler<
     expiresIn,
   });
 
-  res.setHeader(HEADERS.AUTH_TOKEN, token);
-  response.success(res, {});
+  response.success(res, { token, expiresIn });
 });
 
 export const login = requestErrorHandler<unknown, unknown, LoginBody, unknown>(
