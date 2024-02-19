@@ -20,7 +20,7 @@ export const signup = requestErrorHandler<
 >(async (req, res) => {
   const { email, invitation, password, username } = req.body;
 
-  if (await UserInvitations.checkInvitation({ invitation })) {
+  if (!(await UserInvitations.checkInvitation({ invitation }))) {
     throw new BadRequestError({ invitation: DETAILS.INVALID });
   }
 
