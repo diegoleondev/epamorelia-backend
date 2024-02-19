@@ -1,3 +1,4 @@
+import DB_SYNC_MODES from "./db-sync-modes.js";
 import MODES from "./modes.js";
 
 export const ENV = {
@@ -10,6 +11,7 @@ export const ENV = {
   DB_PASSWORD: process.env.DB_PASSWORD ?? "****",
   DB_DATABASE: process.env.DB_DATABASE ?? "test",
   DB_DIALECT: process.env.DB_DIALECT ?? ("mariadb" as const),
+  DB_SYNC_MODE: process.env.DB_SYNC_MODE ?? DB_SYNC_MODES.CREATE_IF_NOT_EXISTS,
 };
 
 export default ENV;
