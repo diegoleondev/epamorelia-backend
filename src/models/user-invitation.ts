@@ -18,11 +18,13 @@ interface IsValidProps {
 export const checkInvitation = async (props: IsValidProps) => {
   try {
     const invitation = await UserInvitation.findOne({
-      where: { targetUserId: props.invitation },
+      where: {
+        id: props.invitation,
+        targetUserId: null,
+      },
     });
-    if (invitation === null) return false;
 
-    return typeof invitation?.targetUserId !== "string";
+    return invitation !== null;
   } catch (error) {
     return false;
   }
@@ -46,6 +48,7 @@ export const getSourceUsername = async (props: { id: string }) => {
     const invitation = await UserInvitation.findOne({
       where: {
         id: props.id,
+        targetUserId: null,
       },
     });
     if (invitation === null) return null;
