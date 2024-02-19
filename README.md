@@ -4,6 +4,21 @@ Por y para la comunidad 🐎.
 
 [Discord](https://discord.gg/MAz3Z9rY5s)
 
+## Certificados SSL para desarrollo
+
+Para ejecutar localmente con SSL, puedes generar certificados autofirmados con los siguientes comandos:
+
+```bash
+# Genera una clave privada
+openssl genpkey -algorithm RSA -out key.pem
+
+# Genera un certificado autofirmado
+openssl req -new -key key.pem -out csr.pem
+openssl x509 -req -days 365 -in csr.pem -signkey key.pem -out cert.pem
+```
+
+Estos comandos crearán una clave privada (key.pem) y un certificado autofirmado (cert.pem) que puedes usar para habilitar HTTPS en tu entorno de desarrollo.
+
 ## Node Version
 
 - Node 20.9.0
