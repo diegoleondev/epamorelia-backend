@@ -1,20 +1,22 @@
-import https = require("node:https");
-import fs = require("node:fs");
+import fs from "node:fs";
+import http from "node:http";
+import https from "node:https";
 
 import app from "./app.js";
 import { ENV, MODES } from "./constants/index.js";
 import { connectDatabase } from "./database/database.js";
 
-const sslCredentials = {
-  key: fs.readFileSync(ENV.SSL_KEY_PATH),
-  cert: fs.readFileSync(ENV.SSL_CERT_PATH),
-  ca:
-    ENV.SERVER_MODE === MODES.PRODUCTION
-      ? fs.readFileSync(ENV.SSL_CA_PATH)
-      : undefined,
-};
-
-const server = https.createServer(sslCredentials, app);
+const server =
+  ENV.SERVER_MODE === MODES.PRODUCTION
+    ? https.createServer(
+        {
+          key: fs.readFileSync(ENV.SSL_KEY_PATH),
+          cert: fs.readFileSync(ENV.SSL_CERT_PATH),
+          ca: fs.readFileSync(ENV.SSL_CA_PATH),
+        },
+        app,
+      )
+    : http.createServer(app);
 
 (async () => {
   await connectDatabase();
