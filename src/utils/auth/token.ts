@@ -17,7 +17,11 @@ export const create = (props: CreateProps) => {
 };
 
 export const verify = (token: string) => {
-  return jwt.verify(token, ENV.AUTH_SECRET);
+  try {
+    return jwt.verify(token, ENV.AUTH_SECRET);
+  } catch (error) {
+    return undefined;
+  }
 };
 
 export const createAuthUser = (props: AuthUserToken) => {
