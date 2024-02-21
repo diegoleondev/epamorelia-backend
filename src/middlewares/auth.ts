@@ -13,11 +13,13 @@ import * as UserTokens from "../models/user-tokens.js";
 const auth = (async (req: Request, res: Response, next: NextFunction) => {
   const token = req.header(HEADERS.AUTH_TOKEN);
 
-  if (token === undefined) {
+  if (token === undefined)
     return response.error(res, {}, STATUS_CODE.UNAUTHORIZED);
-  }
 
   const payload = verifyAuthUser(token);
+
+  if (payload === undefined)
+    return response.error(res, {}, STATUS_CODE.UNAUTHORIZED);
 
   UserTokens.checkToken({ token, userId: payload.userId })
     .then((isValid) => {
