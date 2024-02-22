@@ -16,9 +16,9 @@ export const create = (props: CreateProps) => {
   });
 };
 
-export const verify = (token: string) => {
+export const verify = <T>(token: string) => {
   try {
-    return jwt.verify(token, ENV.AUTH_SECRET);
+    return jwt.verify(token, ENV.AUTH_SECRET) as T;
   } catch (error) {
     return undefined;
   }
@@ -35,7 +35,7 @@ export const createAuthUser = (props: AuthUserToken) => {
 };
 
 export const verifyAuthUser = (token: string) => {
-  return verify(token) as AuthUserToken;
+  return verify<AuthUserToken>(token);
 };
 
 export default { create, createAuthUser, verify, verifyAuthUser };
