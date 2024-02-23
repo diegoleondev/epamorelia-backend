@@ -38,4 +38,26 @@ export const verifyAuthUser = (token: string) => {
   return verify<AuthUserToken>(token);
 };
 
-export default { create, createAuthUser, verify, verifyAuthUser };
+export const createPasswordReset = (props: AuthUserToken) => {
+  const expiresIn = 1000 * 60 * 5;
+
+  const token = create({
+    body: props as any,
+    expiresIn: Math.floor(expiresIn / 1000),
+  });
+
+  return { token, expiresIn };
+};
+
+export const verifyPasswordReset = (token: string) => {
+  return verify<AuthUserToken>(token);
+};
+
+export default {
+  create,
+  createAuthUser,
+  createPasswordReset,
+  verify,
+  verifyAuthUser,
+  verifyPasswordReset,
+};
