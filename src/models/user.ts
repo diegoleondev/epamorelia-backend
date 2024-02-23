@@ -1,6 +1,7 @@
 import { type ValidationError } from "sequelize";
 import { DETAILS } from "../constants/index.js";
 import User from "../schemas/user.js";
+import { encrypt } from "../utils/auth/encrypt.js";
 import { ModelError } from "./index.js";
 
 interface CreateProps {
@@ -54,4 +55,11 @@ export async function getAuthData(props: { email: string }) {
       password: user.password,
     };
   });
+}
+
+export async function updatePassword(props: { id: string; password: string }) {
+  await User.update(
+    { password: await encrypt(props.password) },
+    { where: { id: props.id } },
+  );
 }
