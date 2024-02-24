@@ -25,6 +25,18 @@ authRouter.post(
   controllers.logout,
 );
 
+authRouter.post(
+  "/auth/forgot-password",
+  checkPayload(validator.forgotPassword),
+  controllers.forgotPassword,
+);
+
+authRouter.post(
+  "/auth/reset-password",
+  checkPayload(validator.resetPassword),
+  controllers.resetPassword,
+);
+
 // development only
 authRouter.post(
   "/auth/dev/signup",

@@ -1,6 +1,13 @@
-import type { LoginBody, LogoutBody, SignupBody } from "../validators/auth.js";
+import type {
+  ForgotPasswordBody,
+  LoginBody,
+  LogoutBody,
+  ResetPasswordBody,
+  SignupBody,
+} from "../validators/auth.js";
 
 import { DETAILS } from "../constants/index.js";
+import Email from "../lib/email/index.js";
 import { BadRequestError, UnauthorizedError } from "../lib/response/errors.js";
 import response from "../lib/response/response.js";
 import { compare, encrypt } from "../utils/auth/encrypt.js";
@@ -132,4 +139,48 @@ export const logout = requestErrorHandler<
   } finally {
     response.success(res, {});
   }
+});
+
+export const forgotPassword = requestErrorHandler<
+  unknown,
+  unknown,
+  ForgotPasswordBody,
+  unknown
+>(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await UserModel.getAuthData({ email });
+
+  const { token, expiresIn } = Token.createPasswordReset({
+    userId: user?.id ?? "",
+  });
+
+  if (user === null) return response.success(res, { expiresIn });
+
+  Email.sendForgotPassword({ to: email, token }).catch(console.error);
+
+  response.success(res, { expiresIn });
+});
+
+export const resetPassword = requestErrorHandler<
+  unknown,
+  unknown,
+  ResetPasswordBody,
+  unknown
+>(async (req, res) => {
+  const { token, password } = req.body;
+
+  const payload = Token.verifyPasswordReset(token);
+
+  if (payload === undefined) return response.success(res, {});
+
+  UserModel.updatePassword({
+    id: payload.userId,
+    password,
+  }).catch((e) => {
+    console.error(e);
+    // TODO: Log this error
+  });
+
+  return response.success(res, {});
 });

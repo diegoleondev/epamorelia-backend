@@ -68,3 +68,34 @@ const logoutSchema = z.object({
 
 export const logout = schemaHandler(logoutSchema);
 export type LogoutBody = z.infer<typeof logoutSchema>["body"];
+
+const forgotPasswordSchema = z.object({
+  body: z.object({
+    email: z
+      .string({
+        required_error: DETAILS.EMPTY,
+        invalid_type_error: DETAILS.TYPE,
+      })
+      .email(DETAILS.FORMAT),
+  }),
+});
+export const forgotPassword = schemaHandler(forgotPasswordSchema);
+export type ForgotPasswordBody = z.infer<typeof forgotPasswordSchema>["body"];
+
+export const resetPasswordSchema = z.object({
+  body: z.object({
+    token: z.string({
+      required_error: DETAILS.EMPTY,
+      invalid_type_error: DETAILS.TYPE,
+    }),
+    password: z
+      .string({
+        required_error: DETAILS.EMPTY,
+        invalid_type_error: DETAILS.TYPE,
+      })
+      .min(6, DETAILS.SHORT)
+      .max(100, DETAILS.LONG),
+  }),
+});
+export const resetPassword = schemaHandler(resetPasswordSchema);
+export type ResetPasswordBody = z.infer<typeof resetPasswordSchema>["body"];

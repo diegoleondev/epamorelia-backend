@@ -6,3 +6,5 @@ dist
 key.pem
 cert.pem
 csr.pem
+
+ecosystem.config.cjs

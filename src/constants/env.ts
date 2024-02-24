@@ -12,7 +12,7 @@ export const ENV = {
 
   SERVER_PORT: parseInt(process.env.SERVER_PORT ?? "3000"),
   SERVER_MODE: process.env.SERVER_MODE ?? MODES.PRODUCTION,
-
+  CLIENT_URL: process.env.CLIENT_URL ?? "http://localhost:3003",
   SSL_KEY_PATH: path.join(
     dirname,
     `../../${process.env.SSL_KEY_PATH ?? "key.pem"}`,
@@ -33,6 +33,13 @@ export const ENV = {
   DB_DATABASE: process.env.DB_DATABASE ?? "test",
   DB_DIALECT: process.env.DB_DIALECT ?? ("mariadb" as const),
   DB_SYNC_MODE: process.env.DB_SYNC_MODE ?? DB_SYNC_MODES.CREATE_IF_NOT_EXISTS,
+
+  EMAIL_HOST: process.env.EMAIL_HOST ?? "smtp.gmail.com",
+  EMAIL_PORT: parseInt(process.env.EMAIL_PORT ?? "465"),
+  EMAIL_SECURE: JSON.parse(process.env.EMAIL_SECURE ?? "true") as boolean,
+  EMAIL_USER: process.env.EMAIL_USER ?? "admin",
+  EMAIL_PASS: process.env.EMAIL_PASS ?? "****",
+  EMAIL_FROM: process.env.EMAIL_FROM ?? "",
 };
 
 export default ENV;
