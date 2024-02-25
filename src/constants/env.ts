@@ -1,30 +1,17 @@
-import path from "node:path";
-import url from "node:url";
-
 import DB_SYNC_MODES from "./db-sync-modes.js";
 import MODES from "./modes.js";
-
-const filename = url.fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
 
 export const ENV = {
   AUTH_SECRET: process.env.AUTH_SECRET ?? "****",
 
   SERVER_PORT: parseInt(process.env.SERVER_PORT ?? "3000"),
   SERVER_MODE: process.env.SERVER_MODE ?? MODES.PRODUCTION,
+
   CLIENT_URL: process.env.CLIENT_URL ?? "http://localhost:3003",
-  SSL_KEY_PATH: path.join(
-    dirname,
-    `../../${process.env.SSL_KEY_PATH ?? "key.pem"}`,
-  ),
-  SSL_CERT_PATH: path.join(
-    dirname,
-    `../../${process.env.SSL_CERT_PATH ?? "cert.pem"}`,
-  ),
-  SSL_CA_PATH: path.join(
-    dirname,
-    `../../${process.env.SSL_CA_PATH ?? "ca.pem"}`,
-  ),
+
+  SSL_KEY_PATH: process.env.SSL_KEY_PATH ?? "",
+  SSL_CERT_PATH: process.env.SSL_CERT_PATH ?? "",
+  SSL_CA_PATH: process.env.SSL_CA_PATH ?? "",
 
   DB_HOST: process.env.DB_HOST ?? "localhost",
   DB_PORT: parseInt(process.env.DB_PORT ?? "3306"),
