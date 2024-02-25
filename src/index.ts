@@ -23,7 +23,10 @@ const server =
   console.log("[*] Database connected");
 
   server.listen(app.get("port"), () => {
+    const date = new Date();
+
     console.log(`[*] Server running on port ${app.get("port")}`);
+    console.log(`[*] ${date.toISOString()}`);
   });
 })().catch((error) => {
   console.error("[*] ERROR", error);
