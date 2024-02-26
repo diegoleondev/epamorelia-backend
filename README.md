@@ -1,8 +1,4 @@
-# Tu Pony App
-
-Por y para la comunidad 🐎.
-
-[Discord](https://discord.gg/MAz3Z9rY5s)
+# EPA Morelia
 
 ## Certificados SSL para desarrollo
 
