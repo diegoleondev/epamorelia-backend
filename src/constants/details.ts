@@ -7,6 +7,8 @@ export const DETAILS = {
   INVALID: "INVALID",
   SHORT: "SHORT",
   LONG: "LONG",
+  MIN: "MIN",
+  MAX: "MAX",
 };
 
 export default DETAILS;
