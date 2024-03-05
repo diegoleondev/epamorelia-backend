@@ -10,14 +10,21 @@ import { DETAILS } from "../constants/index.js";
 import Email from "../lib/email/index.js";
 import { BadRequestError, UnauthorizedError } from "../lib/response/errors.js";
 import response from "../lib/response/response.js";
-import { compare, encrypt } from "../utils/auth/encrypt.js";
+import { compare } from "../utils/auth/encrypt.js";
 import Token from "../utils/auth/token.js";
-import requestErrorHandler from "../utils/requestErrorHandler.js";
+import requestErrorHandler from "../utils/error-handler-request.js";
 
-import { modelErrorHandlerForResponse } from "../models/index.js";
-import * as UserInvitations from "../models/user-invitation.js";
+import {
+  findByPkUserInvitationModel,
+  updateUserInvitationModel,
+} from "../models/user-invitation.js";
 import * as UserTokens from "../models/user-tokens.js";
-import * as UserModel from "../models/user.js";
+import {
+  createUserModel,
+  destroyUserModel,
+  findOneUserModel,
+  updatePassword,
+} from "../models/user.js";
 
 export const signup = requestErrorHandler<
   unknown,
@@ -27,39 +34,42 @@ export const signup = requestErrorHandler<
 >(async (req, res) => {
   const { email, invitation, password, username } = req.body;
 
-  if (!(await UserInvitations.checkInvitation({ invitation }))) {
-    throw new BadRequestError({ invitation: DETAILS.INVALID });
-  }
+  const userInvitation = await findByPkUserInvitationModel({ id: invitation });
 
-  const userId = await modelErrorHandlerForResponse(
-    UserModel.create({
-      email,
-      password: await encrypt(password),
-      username,
-    }),
-    (details) => new BadRequestError(details),
-  );
+  if (userInvitation === null || userInvitation.targetUserId !== null)
+    throw new BadRequestError({ invitation: DETAILS.INVALID });
+
+  const user = await createUserModel({
+    username,
+    email,
+    password,
+    branchId: userInvitation.branchId,
+    roleId: userInvitation.roleId,
+  });
+
+  if (!user.success || user.data === null)
+    throw new BadRequestError(user.details);
 
   const destroyUser = () => {
-    UserModel.destroy({ id: userId }).catch(() => {
+    destroyUserModel({ id: user.data?.id ?? "" }).catch(() => {
       /* TODO: Log Error */
     });
   };
 
-  await UserInvitations.setTargetUser({
-    invitation,
-    targetId: userId,
+  await updateUserInvitationModel({
+    id: invitation,
+    targetUserId: user.data.id,
   }).catch(() => {
     // TODO: Log this error
     destroyUser();
     throw new BadRequestError({ invitation: DETAILS.UNKNOWN });
   });
 
-  const { token, expiresIn } = Token.createAuthUser({ userId });
+  const { token, expiresIn } = Token.createAuthUser({ userId: user.data.id });
 
   await UserTokens.create({
     token,
-    userId,
+    userId: user.data.id,
     expiresIn,
   }).catch(() => {
     // TODO: Log this error
@@ -67,58 +77,46 @@ export const signup = requestErrorHandler<
     throw new BadRequestError({ _: DETAILS.UNKNOWN });
   });
 
-  response.success(res, { token, expiresIn });
-});
-
-export const devSignup = requestErrorHandler<
-  unknown,
-  unknown,
-  SignupBody,
-  unknown
->(async (req, res) => {
-  const { email, password, username } = req.body;
-
-  const userId = await modelErrorHandlerForResponse(
-    UserModel.create({
-      email,
-      password: await encrypt(password),
-      username,
-    }),
-    (details) => new BadRequestError(details),
-  );
-
-  const { token, expiresIn } = Token.createAuthUser({ userId });
-
-  // TODO: Handle this error
-  await UserTokens.create({
+  response.success(res, {
+    ...user.data,
     token,
-    userId,
     expiresIn,
+    password: undefined,
   });
-
-  response.success(res, { token, expiresIn });
 });
 
 export const login = requestErrorHandler<unknown, unknown, LoginBody, unknown>(
   async (req, res) => {
     const { email, password } = req.body;
 
-    const user = await UserModel.getAuthData({ email });
+    const user = await findOneUserModel({ email });
 
-    if (user === null) throw new UnauthorizedError();
+    if (user.data === null) throw new UnauthorizedError();
 
-    if (!(await compare(password, user.password)))
+    if (!(await compare(password, user.data.password)))
       throw new UnauthorizedError();
 
-    const { token, expiresIn } = Token.createAuthUser({ userId: user.id });
+    const { token, expiresIn } = Token.createAuthUser({ userId: user.data.id });
 
     await UserTokens.create({
       token,
-      userId: user.id,
+      userId: user.data.id,
       expiresIn,
     });
 
-    response.success(res, { token, expiresIn });
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      maxAge: expiresIn * 1000,
+      sameSite: "strict",
+      path: "/",
+    });
+
+    response.success(res, {
+      ...user.data,
+      token,
+      expiresIn,
+      password: undefined,
+    });
   },
 );
 
@@ -149,13 +147,14 @@ export const forgotPassword = requestErrorHandler<
 >(async (req, res) => {
   const { email } = req.body;
 
-  const user = await UserModel.getAuthData({ email });
+  const user = await findOneUserModel({ email });
 
   const { token, expiresIn } = Token.createPasswordReset({
-    userId: user?.id ?? "",
+    userId: user?.data?.id ?? "",
   });
 
-  if (user === null) return response.success(res, { expiresIn });
+  if (!user.success || user.data === null)
+    return response.success(res, { expiresIn });
 
   Email.sendForgotPassword({ to: email, token }).catch(console.error);
 
@@ -174,7 +173,7 @@ export const resetPassword = requestErrorHandler<
 
   if (payload === undefined) return response.success(res, {});
 
-  UserModel.updatePassword({
+  updatePassword({
     id: payload.userId,
     password,
   }).catch((e) => {
