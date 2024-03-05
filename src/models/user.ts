@@ -1,60 +1,56 @@
-import { type ValidationError } from "sequelize";
-import { DETAILS } from "../constants/index.js";
 import User from "../schemas/user.js";
 import { encrypt } from "../utils/auth/encrypt.js";
-import { ModelError } from "./index.js";
+import sequelizeErrorHandler from "../utils/error-handler-sequelize.js";
 
 interface CreateProps {
   email: string;
   password: string;
   username: string;
+  roleId: string;
+  branchId: string;
 }
 
-export async function create(props: CreateProps) {
-  try {
-    const user = await User.create(props);
-    return String(user.toJSON().id);
-  } catch (e) {
-    const error = e as ValidationError;
-    const ME = new ModelError({
-      email: undefined,
-      username: undefined,
-    });
-
-    const { message } = error.errors[0];
-    if (message === "email must be unique") {
-      ME.addDetails({
-        email: DETAILS.UNIQUE,
-      });
-    } else if (message === "username must be unique") {
-      ME.addDetails({
-        username: DETAILS.UNIQUE,
-      });
-    } else {
-      ME.addDetails({
-        _: DETAILS.UNKNOWN,
-      });
-    }
-
-    throw ME;
-  }
+interface UserParams {
+  id?: string;
+  email?: string;
+  branchId?: string;
+  roleId?: string;
 }
 
-export async function destroy(props: { id: string }) {
-  await User.destroy({
-    where: { id: props.id },
-  });
+export async function findByPkUserModel(props: { id: string }) {
+  const response = await sequelizeErrorHandler(User.findByPk(props.id));
+
+  return { ...response, data: response.data?.toJSON() ?? null };
 }
 
-export async function getAuthData(props: { email: string }) {
-  return await User.findOne({ where: { email: props.email } }).then((user) => {
-    if (user === null) return null;
+export const findAllUserModel = async (where: UserParams) => {
+  // @ts-expect-error - I don't know why this is not working
+  const users = await sequelizeErrorHandler(User.findAll({ where }));
 
-    return {
-      id: user.id,
-      password: user.password,
-    };
-  });
+  return { ...users, data: users.data?.map((user) => user.toJSON()) ?? null };
+};
+
+export async function findOneUserModel(where: UserParams) {
+  // @ts-expect-error - I don't know why this is not working
+  const response = await sequelizeErrorHandler(User.findOne({ where }));
+
+  return { ...response, data: response.data?.toJSON() ?? null };
+}
+
+export async function createUserModel(props: CreateProps) {
+  const response = await sequelizeErrorHandler(
+    User.create({
+      ...props,
+      password: await encrypt(props.password),
+    }),
+  );
+
+  return { ...response, data: response.data?.toJSON() ?? null };
+}
+
+export async function destroyUserModel(where: UserParams) {
+  // @ts-expect-error - I don't know why this is not working
+  await User.destroy({ where });
 }
 
 export async function updatePassword(props: { id: string; password: string }) {

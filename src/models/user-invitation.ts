@@ -1,63 +1,76 @@
+import Branch from "../schemas/branch.js";
 import UserInvitation from "../schemas/user-invitations.js";
 import User from "../schemas/user.js";
+import sequelizeErrorHandler from "../utils/error-handler-sequelize.js";
 
-export const create = async (props: {
-  sourceId: UserInvitation["sourceUserId"];
-}) => {
-  // TODO - HANDLE ERROR
-  const invitation = await UserInvitation.create({
-    sourceUserId: props.sourceId,
-  });
-
-  return String(invitation.toJSON().id);
-};
-
-interface IsValidProps {
-  invitation: string;
+interface FindAllUserInvitationsProps {
+  where?: {
+    branchId?: string;
+  };
 }
-export const checkInvitation = async (props: IsValidProps) => {
-  try {
-    const invitation = await UserInvitation.findOne({
-      where: {
-        id: props.invitation,
-        targetUserId: null,
-      },
-    });
 
-    return invitation !== null;
-  } catch (error) {
-    return false;
-  }
-};
-
-interface SetTargetUserProps {
-  invitation: string;
-  targetId: string;
+interface CreateUserInvitationModelProps {
+  sourceUserId: string;
+  roleId: string;
+  branchId: string;
+  reference?: string;
 }
-export const setTargetUser = async (props: SetTargetUserProps) => {
-  return await UserInvitation.update(
-    {
-      targetUserId: props.targetId,
-    },
-    { where: { id: props.invitation } },
-  );
-};
 
-export const getSourceUsername = async (props: { id: string }) => {
+interface UpdateUserInvitationModelProps {
+  id: string;
+  targetUserId?: string;
+  roleId?: string;
+  branchId?: string;
+}
+
+export const findByPkUserInvitationModel = async (props: { id: string }) => {
   try {
-    const invitation = await UserInvitation.findOne({
-      where: {
-        id: props.id,
-        targetUserId: null,
-      },
-    });
+    const invitation = await UserInvitation.findByPk(props.id);
+
     if (invitation === null) return null;
 
-    const user = await User.findByPk(invitation.sourceUserId);
-    if (user === null) return null;
+    const sourceUser = await User.findByPk(invitation.sourceUserId);
+    if (sourceUser === null) return null;
 
-    return String(user.username);
+    let targetUser = null;
+    if (invitation.targetUserId !== null)
+      targetUser = await User.findByPk(invitation.targetUserId);
+
+    const branch = await Branch.findByPk(invitation.branchId);
+
+    return {
+      ...invitation.toJSON(),
+      sourceUserName: sourceUser.toJSON().username,
+      targetUserName: targetUser?.toJSON().username ?? null,
+      branchName: branch?.toJSON().name ?? null,
+    };
   } catch (error) {
     return null;
   }
+};
+
+export const findAllUserInvitationsModel = async (
+  props: FindAllUserInvitationsProps,
+) => {
+  const result = await sequelizeErrorHandler(UserInvitation.findAll(props));
+
+  return { ...result, data: result.data?.map((i) => i.toJSON()) ?? [] };
+};
+
+export const createUserInvitationModel = async (
+  props: CreateUserInvitationModelProps,
+) => {
+  const invitation = await UserInvitation.create(props);
+
+  return String(invitation.id);
+};
+
+export const updateUserInvitationModel = async (
+  props: UpdateUserInvitationModelProps,
+) => {
+  const { id, ...rest } = props;
+
+  return await sequelizeErrorHandler(
+    UserInvitation.update(rest, { where: { id } }),
+  );
 };
