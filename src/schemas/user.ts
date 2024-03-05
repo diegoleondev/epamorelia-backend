@@ -6,15 +6,17 @@ import {
   type InferCreationAttributes,
 } from "sequelize";
 import { sequelize } from "../database/database.js";
+import Branch from "./branch.js";
 import UserInvitation from "./user-invitations.js";
 import UserToken from "./user-tokens.js";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<string>;
+  declare roleId: string;
+  declare branchId: string;
   declare email: string;
   declare username: string;
   declare password: string;
-  declare verified: CreationOptional<boolean>;
   declare createdAt: CreationOptional<Date>;
 }
 
@@ -26,6 +28,15 @@ User.init(
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
     },
+    roleId: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "user",
+    },
+    branchId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -35,11 +46,6 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-    },
-    verified: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
     },
     password: {
       type: DataTypes.STRING,
@@ -89,6 +95,17 @@ User.hasMany(UserInvitation, {
 UserInvitation.belongsTo(User, {
   foreignKey: "targetUserId",
   targetKey: "id",
+});
+
+User.belongsTo(Branch, {
+  foreignKey: "branchId",
+  targetKey: "id",
+});
+
+Branch.hasMany(User, {
+  foreignKey: "branchId",
+  sourceKey: "id",
+  onDelete: "CASCADE",
 });
 
 export default User;
