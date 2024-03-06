@@ -57,10 +57,10 @@ export const getBranchUsersController = requestErrorHandler<
     if (user.role < ADMIN) throw new UnauthorizedError();
   }
 
-  const users = await findAllUserModel({ branchId: params.branchId });
-  if (!users.success) throw new InternalServerError();
+  const usersResult = await findAllUserModel({ branchId: params.branchId });
+  if (!usersResult.success) throw new InternalServerError();
 
-  response.success(res, users.data);
+  response.success(res, usersResult.data);
 });
 
 export const getAllBranchController = requestErrorHandler<
@@ -72,10 +72,10 @@ export const getAllBranchController = requestErrorHandler<
   const { user } = req;
   if (user.role < ADMIN) throw new UnauthorizedError();
 
-  const branches = await findAllBranchesModel();
-  if (!branches.success) throw new InternalServerError();
+  const branchesResult = await findAllBranchesModel();
+  if (!branchesResult.success) throw new InternalServerError();
 
-  response.success(res, branches);
+  response.success(res, branchesResult.data);
 });
 
 export const createBranchController = requestErrorHandler<
@@ -88,10 +88,11 @@ export const createBranchController = requestErrorHandler<
 
   if (user.role < ADMIN) throw new UnauthorizedError();
 
-  const branch = await createBranchModel(body);
-  if (!branch.success) throw new InternalServerError(branch.details);
+  const branchResult = await createBranchModel(body);
+  if (!branchResult.success)
+    throw new InternalServerError(branchResult.details);
 
-  response.success(res, { id: branch.data.id });
+  response.success(res, { id: branchResult.data.id });
 });
 
 export const updateBranchController = requestErrorHandler<
