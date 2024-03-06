@@ -20,7 +20,7 @@ const loginSchema = z.object({
   }),
 });
 
-export const login = schemaHandler(loginSchema);
+export const loginValidator = schemaHandler(loginSchema);
 export type LoginBody = z.infer<typeof loginSchema>["body"];
 
 const signupSchema = z.object({
@@ -54,7 +54,7 @@ const signupSchema = z.object({
   }),
 });
 
-export const signup = schemaHandler(signupSchema);
+export const signupValidator = schemaHandler(signupSchema);
 export type SignupBody = z.infer<typeof signupSchema>["body"];
 
 const logoutSchema = z.object({
@@ -66,7 +66,7 @@ const logoutSchema = z.object({
   }),
 });
 
-export const logout = schemaHandler(logoutSchema);
+export const logoutValidator = schemaHandler(logoutSchema);
 export type LogoutBody = z.infer<typeof logoutSchema>["body"];
 
 const forgotPasswordSchema = z.object({
@@ -79,10 +79,10 @@ const forgotPasswordSchema = z.object({
       .email(DETAILS.FORMAT),
   }),
 });
-export const forgotPassword = schemaHandler(forgotPasswordSchema);
+export const forgotPasswordValidator = schemaHandler(forgotPasswordSchema);
 export type ForgotPasswordBody = z.infer<typeof forgotPasswordSchema>["body"];
 
-export const resetPasswordSchema = z.object({
+const resetPasswordSchema = z.object({
   body: z.object({
     token: z.string({
       required_error: DETAILS.EMPTY,
@@ -97,5 +97,5 @@ export const resetPasswordSchema = z.object({
       .max(100, DETAILS.LONG),
   }),
 });
-export const resetPassword = schemaHandler(resetPasswordSchema);
+export const resetPasswordValidator = schemaHandler(resetPasswordSchema);
 export type ResetPasswordBody = z.infer<typeof resetPasswordSchema>["body"];

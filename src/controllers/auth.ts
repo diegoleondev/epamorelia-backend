@@ -26,7 +26,7 @@ import {
   updatePassword,
 } from "../models/user.js";
 
-export const signup = requestErrorHandler<
+export const signupController = requestErrorHandler<
   unknown,
   unknown,
   SignupBody,
@@ -85,42 +85,45 @@ export const signup = requestErrorHandler<
   });
 });
 
-export const login = requestErrorHandler<unknown, unknown, LoginBody, unknown>(
-  async (req, res) => {
-    const { email, password } = req.body;
+export const loginController = requestErrorHandler<
+  unknown,
+  unknown,
+  LoginBody,
+  unknown
+>(async (req, res) => {
+  const { email, password } = req.body;
 
-    const user = await findOneUserModel({ email });
+  const user = await findOneUserModel({ email });
 
-    if (user.data === null) throw new UnauthorizedError();
+  if (user.data === null) throw new UnauthorizedError();
 
-    if (!(await compare(password, user.data.password)))
-      throw new UnauthorizedError();
+  if (!(await compare(password, user.data.password)))
+    throw new UnauthorizedError();
 
-    const { token, expiresIn } = Token.createAuthUser({ userId: user.data.id });
+  const { token, expiresIn } = Token.createAuthUser({ userId: user.data.id });
 
-    await UserTokens.create({
-      token,
-      userId: user.data.id,
-      expiresIn,
-    });
+  await UserTokens.create({
+    token,
+    userId: user.data.id,
+    expiresIn,
+  });
 
-    res.cookie("accessToken", token, {
-      httpOnly: true,
-      maxAge: expiresIn * 1000,
-      sameSite: "strict",
-      path: "/",
-    });
+  res.cookie("accessToken", token, {
+    httpOnly: true,
+    maxAge: expiresIn * 1000,
+    sameSite: "strict",
+    path: "/",
+  });
 
-    response.success(res, {
-      ...user.data,
-      token,
-      expiresIn,
-      password: undefined,
-    });
-  },
-);
+  response.success(res, {
+    ...user.data,
+    token,
+    expiresIn,
+    password: undefined,
+  });
+});
 
-export const logout = requestErrorHandler<
+export const logoutController = requestErrorHandler<
   unknown,
   unknown,
   LogoutBody,
@@ -139,7 +142,7 @@ export const logout = requestErrorHandler<
   }
 });
 
-export const forgotPassword = requestErrorHandler<
+export const forgotPasswordController = requestErrorHandler<
   unknown,
   unknown,
   ForgotPasswordBody,
@@ -161,7 +164,7 @@ export const forgotPassword = requestErrorHandler<
   response.success(res, { expiresIn });
 });
 
-export const resetPassword = requestErrorHandler<
+export const resetPasswordController = requestErrorHandler<
   unknown,
   unknown,
   ResetPasswordBody,
