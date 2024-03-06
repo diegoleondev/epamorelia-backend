@@ -33,3 +33,9 @@ export class NotFoundError extends ResponseError {
     super({ statusCode: STATUS_CODE.NOT_FOUND, details });
   }
 }
+
+export class InternalServerError extends ResponseError {
+  constructor(details?: Details) {
+    super({ statusCode: STATUS_CODE.UNKNOWN_ERROR, details });
+  }
+}
