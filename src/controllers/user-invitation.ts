@@ -9,8 +9,8 @@ import {
 import requestErrorHandler from "../utils/error-handler-request.js";
 import type {
   CreateUserInvitationBody,
-  getAllUserInvitationsQuery,
   GetInvitationUsernameParams,
+  getAllUserInvitationsQuery,
 } from "../validators/user-invitations.js";
 
 export const getUserInvitationController = requestErrorHandler<
@@ -22,9 +22,6 @@ export const getUserInvitationController = requestErrorHandler<
   const { id } = req.params;
 
   const userInvitationResult = await findByPkUserInvitationModel({ id });
-  if (userInvitationResult?.branchId !== req.user.branchId) {
-    if (req.user.role < ROLES.ADMIN) throw new UnauthorizedError();
-  }
 
   response.success(res, userInvitationResult);
 });
