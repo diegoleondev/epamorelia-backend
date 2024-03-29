@@ -22,37 +22,37 @@ const branchRouter = Router();
 
 branchRouter.get(
   "/branch/:branchId",
-  auth,
+  auth(),
   checkPayload(getBranchValidator),
   getBranchController,
 );
 
-branchRouter.get("/branch", auth, getAllBranchController);
+branchRouter.get("/branch", auth(), getAllBranchController);
 
 branchRouter.get(
   "/branch/:branchId/users",
-  auth,
+  auth(),
   checkPayload(getBranchUsersValidator),
   getBranchUsersController,
 );
 
 branchRouter.post(
   "/branch",
-  auth,
+  auth(),
   checkPayload(createBranchValidator),
   createBranchController,
 );
 
 branchRouter.patch(
   "/branch/:branchId",
-  auth,
+  auth(),
   checkPayload(updateBranchValidator),
   updateBranchController,
 );
 
 branchRouter.delete(
   "/branch/:branchId",
-  auth,
+  auth(),
   checkPayload(removeBranchValidator),
   removeBranchController,
 );
