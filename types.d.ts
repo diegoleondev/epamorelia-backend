@@ -9,5 +9,6 @@ declare namespace Express {
       password: string;
       createdAt: Date;
     };
+    authenticated: boolean;
   }
 }
