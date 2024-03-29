@@ -12,6 +12,7 @@ import response from "./lib/response/response.js";
 import cors from "cors";
 import authRouter from "./routes/auth.js";
 import branchRouter from "./routes/branch.js";
+import formRouter from "./routes/form.js";
 import init from "./routes/init.js";
 import userInvitationRouter from "./routes/user-invitation.js";
 
@@ -31,6 +32,7 @@ app.get("/", (req, res) => {
 });
 
 app.use(authRouter);
+app.use(formRouter);
 app.use(userInvitationRouter);
 app.use(branchRouter);
 app.use(init);
