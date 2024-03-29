@@ -23,14 +23,14 @@ invitationRouter.get(
 
 invitationRouter.get(
   "/user-invitations",
-  auth,
+  auth(),
   checkPayload(getAllUserInvitationsValidator),
   getAllUserInvitationsController,
 );
 
 invitationRouter.post(
   "/user-invitation",
-  auth,
+  auth(),
   checkPayload(createUserInvitationValidator),
   createUserInvitationController,
 );
