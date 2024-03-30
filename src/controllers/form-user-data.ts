@@ -37,6 +37,7 @@ export const getFormUserDataController = requestErrorHandler<
 
   const form = await findByPkFormUserDataModel({ id });
   if (!form.success || isNullish(form.data)) throw new NotFoundError();
+  if (form.data.deleted === true) throw new NotFoundError();
 
   const branch = await findByPKBranchModel({ id: form.data?.branchId ?? "" });
   if (!branch.success || isNullish(branch.data))
@@ -117,6 +118,7 @@ export const updateFormUserDataPublicController = requestErrorHandler<
 
   const form = await findByPkFormUserDataModel({ id });
   if (!form.success || form.data === null) throw new NotFoundError();
+  if (form.data.deleted === true) throw new NotFoundError();
 
   if (form.data.editable === false)
     throw new UnauthorizedError({ _: DETAILS.LOCKED });
