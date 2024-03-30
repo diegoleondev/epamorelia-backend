@@ -15,6 +15,7 @@ class Branch extends Model<
   declare id: CreationOptional<string>;
   declare name: string;
   declare limit: number;
+  declare counter: CreationOptional<number>;
 }
 
 Branch.init(
@@ -33,6 +34,12 @@ Branch.init(
     limit: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
+    },
+    counter: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
     },
   },
   {
