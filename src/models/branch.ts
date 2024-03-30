@@ -1,6 +1,6 @@
 import Branch from "../schemas/branch.js";
 import sequelizeErrorHandler from "../utils/error-handler-sequelize.js";
-
+import EHModel from "./error-handler.js";
 interface CreateBranchProps {
   name: string;
   limit: number;
@@ -59,3 +59,23 @@ export const removeBranchModel = async (props: { id: string }) => {
     },
   });
 };
+
+export const incrementCounterBranchModel = async (props: { id: string }) =>
+  await EHModel(async () => {
+    const branch = await Branch.findByPk(props.id);
+    if (branch === null) throw new Error("Branch not found");
+
+    await branch.update({ counter: branch.counter + 1 });
+
+    return branch.toJSON();
+  });
+
+export const decrementCounterBranchModel = async (props: { id: string }) =>
+  await EHModel(async () => {
+    const branch = await Branch.findByPk(props.id);
+    if (branch === null) throw new Error("Branch not found");
+
+    await branch.update({ counter: branch.counter - 1 });
+
+    return branch.toJSON();
+  });
