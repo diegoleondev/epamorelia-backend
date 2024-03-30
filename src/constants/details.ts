@@ -10,6 +10,7 @@ export const DETAILS = {
   MIN: "MIN",
   MAX: "MAX",
   LOCKED: "LOCKED",
+  LIMIT: "LIMIT",
 };
 
 export default DETAILS;
