@@ -6,7 +6,11 @@ import {
   UnauthorizedError,
 } from "../lib/response/errors.js";
 import response from "../lib/response/response.js";
-import { findByPKBranchModel } from "../models/branch.js";
+import {
+  decrementCounterBranchModel,
+  findByPKBranchModel,
+  incrementCounterBranchModel,
+} from "../models/branch.js";
 import {
   createFormUserDataModel,
   deleteFormUserDataModel,
@@ -87,11 +91,21 @@ export const createFormUserDataController = requestErrorHandler<
     if (req.user.branchId !== body.branchId) throw new UnauthorizedError();
   }
 
+  const branch = await findByPKBranchModel({ id: body.branchId });
+  if (!branch.success || branch.data === null) throw new InternalServerError();
+
+  if (branch.data.counter >= branch.data.limit) {
+    throw new UnauthorizedError({ _: DETAILS.LIMIT });
+  }
+
   const result = await createFormUserDataModel({
     ...body,
     createdBy: req.user.id,
   });
   if (!result.success || result.data === null) throw new InternalServerError();
+
+  const increment = await incrementCounterBranchModel({ id: body.branchId });
+  if (!increment.success) throw new InternalServerError();
 
   response.success(res, { id: result.data?.id });
 });
@@ -135,6 +149,7 @@ export const updateFormUserDataPublicController = requestErrorHandler<
   response.success(res, form.data);
 });
 
+// TODO: use delete endpoint for delete
 export const updateFormUserDataController = requestErrorHandler<
   UpdateFormUserDataParams,
   unknown,
@@ -154,6 +169,17 @@ export const updateFormUserDataController = requestErrorHandler<
   const form = await updateFormUserDataModel({ id, ...lockedBody });
   if (!form.success) throw new InternalServerError(form.details);
 
+  if (lockedBody.deleted !== undefined) {
+    let result;
+    if (lockedBody.deleted) {
+      result = await decrementCounterBranchModel({ id: req.user.branchId });
+    } else {
+      result = await incrementCounterBranchModel({ id: req.user.branchId });
+    }
+
+    if (!result.success) throw new InternalServerError();
+  }
+
   response.success(res, form.data);
 });
 
@@ -163,16 +189,21 @@ export const deleteFormUserDataController = requestErrorHandler<
   unknown,
   unknown
 >(async (req, res) => {
-  const { id } = req.params;
+  const { user, params } = req;
+  const { id } = params;
 
-  if (req.user.role < ROLES.STAFF) throw new UnauthorizedError();
-  if (req.user.role < ROLES.ADMIN) {
+  if (user.role < ROLES.STAFF) throw new UnauthorizedError();
+  if (user.role < ROLES.ADMIN) {
     const result = await findByPkFormUserDataModel({ id });
     if (result.data === null) throw new InternalServerError();
-    if (req.user.branchId !== result.data.branchId)
-      throw new UnauthorizedError();
+    if (user.branchId !== result.data.branchId) throw new UnauthorizedError();
   }
 
   const result = await deleteFormUserDataModel({ id });
+  if (!result.success) throw new InternalServerError(result.details);
+
+  const decrement = await decrementCounterBranchModel({ id: user.branchId });
+  if (!decrement.success) throw new InternalServerError();
+
   response.success(res, result);
 });
