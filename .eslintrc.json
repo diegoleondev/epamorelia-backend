@@ -8,6 +8,14 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "rules": {},
-  "ignorePatterns": ["dist/", "node_modules/", "tsconfig.json"]
+  "ignorePatterns": [
+    "dist/",
+    "node_modules/",
+    "tsconfig.json",
+    "types.d.ts",
+    "ecosystem.config.cjs"
+  ],
+  "rules": {
+    "@typescript-eslint/explicit-function-return-type": "off"
+  }
 }
