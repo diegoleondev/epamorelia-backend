@@ -1,5 +1,6 @@
 import FormUserData from "../schemas/form-user-data.js";
 import sequelizeErrorHandler from "../utils/error-handler-sequelize.js";
+import EHModel from "./error-handler.js";
 
 interface FormUserDataAttributes {
   id?: string;
@@ -31,22 +32,19 @@ interface CreateFormUserDataBody {
   createdBy: string;
 }
 
-export const findByPkFormUserDataModel = async (props: { id: string }) => {
-  const response = await sequelizeErrorHandler(FormUserData.findByPk(props.id));
-
-  return { ...response, data: response.data?.toJSON() ?? null };
-};
+export const findByPkFormUserDataModel = async (props: { id: string }) =>
+  await EHModel(async () => {
+    const form = await FormUserData.findByPk(props.id);
+    return form;
+  });
 
 export const findAllFormUserDataModel = async (
   options: findAllFormUserDataOptions,
-) => {
-  const response = await sequelizeErrorHandler(FormUserData.findAll(options));
-
-  return {
-    ...response,
-    data: response.data?.map((item) => item.toJSON()) ?? null,
-  };
-};
+) =>
+  await EHModel(async () => {
+    const form = await FormUserData.findAll(options);
+    return form;
+  });
 
 export const createFormUserDataModel = async (
   props: CreateFormUserDataBody,
@@ -68,10 +66,9 @@ export const updateFormUserDataModel = async (
   return response;
 };
 
-export const deleteFormUserDataModel = async (props: { id: string }) => {
-  const response = await sequelizeErrorHandler(
-    FormUserData.destroy({ where: { id: props.id } }),
-  );
-
-  return response;
-};
+export const deleteFormUserDataModel = async (props: { id: string }) =>
+  await EHModel(async () => {
+    const { id } = props;
+    await FormUserData.destroy({ where: { id } });
+    return id;
+  });
