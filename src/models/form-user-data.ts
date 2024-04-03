@@ -35,7 +35,7 @@ interface CreateFormUserDataBody {
 export const findByPkFormUserDataModel = async (props: { id: string }) =>
   await EHModel(async () => {
     const form = await FormUserData.findByPk(props.id);
-    return form;
+    return form?.toJSON() ?? null;
   });
 
 export const findAllFormUserDataModel = async (
@@ -43,7 +43,7 @@ export const findAllFormUserDataModel = async (
 ) =>
   await EHModel(async () => {
     const form = await FormUserData.findAll(options);
-    return form;
+    return form.map((f) => f.toJSON());
   });
 
 export const createFormUserDataModel = async (
