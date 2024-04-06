@@ -37,7 +37,7 @@ const createSchema = z.object({
         invalid_type_error: DETAILS.TYPE,
       })
       .uuid(DETAILS.FORMAT),
-    roleId: z.enum(["ADMIN", "MANAGER", "STAFF", "USER"]),
+    roleId: z.enum(["ADMIN", "COORDINATOR", "STAFF", "USER"]),
     reference: z.string().optional(),
   }),
 });
