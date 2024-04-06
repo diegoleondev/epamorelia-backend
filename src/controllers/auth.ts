@@ -6,7 +6,7 @@ import type {
   SignupBody,
 } from "../validators/auth.js";
 
-import { DETAILS } from "../constants/index.js";
+import { DETAILS, ROLES } from "../constants/index.js";
 import Email from "../lib/email/index.js";
 import { BadRequestError, UnauthorizedError } from "../lib/response/errors.js";
 import response from "../lib/response/response.js";
@@ -79,6 +79,7 @@ export const signupController = requestErrorHandler<
 
   response.success(res, {
     ...user.data,
+    role: ROLES[user.data.roleId as "USER"] ?? 0,
     token,
     expiresIn,
     password: undefined,
@@ -117,6 +118,7 @@ export const loginController = requestErrorHandler<
 
   response.success(res, {
     ...user.data,
+    role: ROLES[user.data.roleId as "USER"] ?? 0,
     token,
     expiresIn,
     password: undefined,
