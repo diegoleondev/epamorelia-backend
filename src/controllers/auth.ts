@@ -4,6 +4,7 @@ import type {
   LogoutBody,
   ResetPasswordBody,
   SignupBody,
+  VerifyQuery,
 } from "../validators/auth.js";
 
 import { DETAILS, ROLES } from "../constants/index.js";
@@ -11,7 +12,7 @@ import Email from "../lib/email/index.js";
 import { BadRequestError, UnauthorizedError } from "../lib/response/errors.js";
 import response from "../lib/response/response.js";
 import { compare } from "../utils/auth/encrypt.js";
-import Token from "../utils/auth/token.js";
+import Token, { verifyAuthUser } from "../utils/auth/token.js";
 import requestErrorHandler from "../utils/error-handler-request.js";
 
 import {
@@ -187,4 +188,28 @@ export const resetPasswordController = requestErrorHandler<
   });
 
   return response.success(res, {});
+});
+
+export const verifyController = requestErrorHandler<
+  unknown,
+  unknown,
+  unknown,
+  VerifyQuery
+>(async (req, res) => {
+  const { token } = req.query;
+
+  const payload = verifyAuthUser(token);
+
+  if (payload === undefined) throw new UnauthorizedError();
+
+  const isValid = await UserTokens.checkToken({
+    token,
+    userId: payload.userId,
+  }).catch(() => false);
+
+  if (!isValid) {
+    throw new UnauthorizedError();
+  }
+
+  response.success(res, {});
 });

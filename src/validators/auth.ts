@@ -99,3 +99,14 @@ const resetPasswordSchema = z.object({
 });
 export const resetPasswordValidator = schemaHandler(resetPasswordSchema);
 export type ResetPasswordBody = z.infer<typeof resetPasswordSchema>["body"];
+
+const verifySchema = z.object({
+  query: z.object({
+    token: z.string({
+      required_error: DETAILS.EMPTY,
+      invalid_type_error: DETAILS.TYPE,
+    }),
+  }),
+});
+export const verifyValidator = schemaHandler(verifySchema);
+export type VerifyQuery = z.infer<typeof verifySchema>["query"];
