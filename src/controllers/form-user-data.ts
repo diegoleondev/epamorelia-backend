@@ -91,6 +91,12 @@ export const createFormUserDataController = requestErrorHandler<
     if (req.user.branchId !== body.branchId) throw new UnauthorizedError();
   }
 
+  const bodyLocked: CreateFormUserDataBody = {
+    name: body.name,
+    surname: body.surname,
+    branchId: body.branchId,
+  };
+
   const branch = await findByPKBranchModel({ id: body.branchId });
   if (!branch.success || branch.data === null) throw new InternalServerError();
 
@@ -99,9 +105,10 @@ export const createFormUserDataController = requestErrorHandler<
   }
 
   const result = await createFormUserDataModel({
-    ...body,
+    ...bodyLocked,
     createdBy: req.user.id,
   });
+
   if (!result.success || result.data === null) throw new InternalServerError();
 
   const increment = await incrementCounterBranchModel({ id: body.branchId });
@@ -120,6 +127,8 @@ export const updateFormUserDataPublicController = requestErrorHandler<
   const { id } = params;
 
   const bodyLocked: typeof body = {
+    name: body.name,
+    surname: body.surname,
     allergies: body.allergies,
     diseases: body.diseases,
     emergencyContactFullName: body.emergencyContactFullName,

@@ -5,7 +5,8 @@ import EHModel from "./error-handler.js";
 interface FormUserDataAttributes {
   id?: string;
   userType?: number;
-  fullName?: string;
+  name?: string;
+  surname?: string;
   phone?: string;
   branchId?: string;
   sex?: boolean;
@@ -26,8 +27,9 @@ interface findAllFormUserDataOptions {
   };
 }
 
-interface CreateFormUserDataBody {
-  fullName: string;
+export interface CreateFormUserDataProps {
+  name: string;
+  surname?: string;
   branchId: string;
   createdBy: string;
 }
@@ -47,7 +49,7 @@ export const findAllFormUserDataModel = async (
   });
 
 export const createFormUserDataModel = async (
-  props: CreateFormUserDataBody,
+  props: CreateFormUserDataProps,
 ) => {
   const response = await sequelizeErrorHandler(FormUserData.create(props));
 

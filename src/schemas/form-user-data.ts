@@ -18,7 +18,8 @@ class FormUserData extends Model<
   declare deleted: CreationOptional<boolean>;
 
   declare userType: CreationOptional<number | null>;
-  declare fullName: string;
+  declare name: string;
+  declare surname: CreationOptional<string | null>;
   declare phone: CreationOptional<string | null>;
   declare branchId: string | null;
   declare sex: CreationOptional<boolean | null>;
@@ -60,7 +61,11 @@ FormUserData.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    fullName: {
+    name: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    surname: {
       type: DataTypes.STRING,
       allowNull: true,
     },
