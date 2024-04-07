@@ -22,12 +22,12 @@ const userTypeSchema = z.number({
   invalid_type_error: DETAILS.TYPE,
 });
 
-const fullNameSchema = z
+const nameSchema = z
   .string({
     required_error: DETAILS.EMPTY,
     invalid_type_error: DETAILS.TYPE,
   })
-  .min(5, DETAILS.SHORT)
+  .min(3, DETAILS.SHORT)
   .max(30, DETAILS.LONG);
 
 const phoneSchema = z
@@ -43,7 +43,7 @@ const sexSchema = z.boolean({
   invalid_type_error: DETAILS.TYPE,
 });
 
-const emergencyContactFullNameSchema = fullNameSchema;
+const emergencyContactFullNameSchema = nameSchema;
 const emergencyContactPhoneSchema = phoneSchema;
 const allergiesSchema = textSchema;
 const diseasesSchema = textSchema;
@@ -73,7 +73,8 @@ export type GetAllFormUserDataQuery = z.infer<
 
 const createFormUserDataSchema = z.object({
   body: z.object({
-    fullName: fullNameSchema,
+    name: nameSchema,
+    surname: nameSchema.optional(),
     branchId,
   }),
 });
@@ -110,6 +111,8 @@ const updateFormUserDataPublicSchema = z.object({
     id: idSchema,
   }),
   body: z.object({
+    name: nameSchema,
+    surname: nameSchema,
     userType: userTypeSchema,
     phone: phoneSchema,
     sex: sexSchema,
