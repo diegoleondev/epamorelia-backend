@@ -1,3 +1,4 @@
+import xlsx from "xlsx";
 import DETAILS from "../constants/details.js";
 import ROLES from "../constants/roles.js";
 import {
@@ -215,4 +216,92 @@ export const deleteFormUserDataController = requestErrorHandler<
   if (!decrement.success) throw new InternalServerError();
 
   response.success(res, result);
+});
+
+export const xlsxFormUserDataController = requestErrorHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetAllFormUserDataQuery
+>(async (req, res) => {
+  const { user } = req;
+  const { branchId } = req.query;
+
+  if (user.role < ROLES.STAFF) throw new UnauthorizedError();
+
+  if (user.role < ROLES.ADMIN) {
+    if (typeof branchId !== "string") throw new UnauthorizedError();
+    if (branchId !== user.branchId) throw new UnauthorizedError();
+  }
+
+  if (typeof branchId !== "string") throw new InternalServerError();
+
+  const branch = await findByPKBranchModel({ id: branchId });
+  if (!branch.success || isNullish(branch.data))
+    throw new InternalServerError();
+
+  const result = await findAllFormUserDataModel({
+    where: { branchId, deleted: false },
+  });
+
+  if (!result.success) throw new InternalServerError();
+
+  const branchName = branch.data?.name ?? "Desconocido";
+
+  const table: Array<Array<string | null>> = [
+    [
+      "Nombre(s)",
+      "Apellido(s)",
+      "Teléfono",
+      "Es",
+      "Sede",
+      "Genero",
+      "Nombre (CE)",
+      "Teléfono (CE)",
+      "Alergias",
+      "Enfermedades",
+      "Medicamento",
+    ],
+  ];
+
+  const getUserType = (userType: number | null) =>
+    ({
+      0: "Epa",
+      1: "Asesor",
+      2: "Tio",
+      3: "desconocido",
+    })[userType ?? 3] ?? "Desconocido";
+
+  result.data.forEach((user) =>
+    table.push([
+      user.name,
+      user.surname,
+      user.phone,
+      getUserType(user.userType),
+      branch.data?.name ?? "Desconocido",
+      user.sex === true ? "Hombre" : "Mujer",
+      user.emergencyContactFullName,
+      user.emergencyContactPhone,
+      user.allergies,
+      user.diseases,
+      user.medicine,
+    ]),
+  );
+
+  const workbook = xlsx.utils.book_new();
+  const worksheet = xlsx.utils.aoa_to_sheet(table);
+  xlsx.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    `Asistentes (${branchName})`,
+  );
+
+  const buffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
+
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=usuarios.xlsx");
+  res.send(buffer);
 });
