@@ -5,6 +5,7 @@ import {
   getFormUserDataController,
   updateFormUserDataController,
   updateFormUserDataPublicController,
+  xlsxFormUserDataController,
 } from "../controllers/form-user-data.js";
 import auth from "../middlewares/auth.js";
 import checkPayload from "../middlewares/check-payload.js";
@@ -18,6 +19,13 @@ import {
 } from "../validators/form-user-data.js";
 
 const formRouter = Router();
+
+formRouter.get(
+  "/form/user-data/xlsx/",
+  auth(),
+  checkPayload(getAllFormUserDataValidator),
+  xlsxFormUserDataController,
+);
 
 formRouter.get(
   "/form/user-data/:id",
